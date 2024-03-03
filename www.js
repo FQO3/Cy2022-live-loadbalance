@@ -36,15 +36,18 @@ app.get("/", function (req, res) {
     res.redirect("/index.html");
 });
 app.use(express.static("PC"));
+app.post("/api/create/:id", async (req, res) => {
+    var code = req.params;
+    const command = `ffmpeg -i rtmp://cyxsh.top:1935/live/${code.id} -c copy -f flv rtmp://127.0.0.1:1935/live/${code.id}`;
+    try {
+        const { stdout, stderr } = exec(command);
+        console.log(`已【成功】创建${code}的视频流`);
+        res.sendStatus(200);
+    } catch (error) {
+        console.error(`Failed to execute command: ${error}`);
+        res.sendStatus(403);
+    }
+});
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-});
-
-const command = "ffmpeg -i rtmp://cyxsh.top:1935/live/video -c copy -f flv rtmp://fqo3.site:1935/live/video";
-exec(command, (error, stdout, stderr) => {
-    if (error) {
-        console.error(`Failed to execute command: ${error}`);
-        return;
-    }
-    console.log(stdout);
 });
